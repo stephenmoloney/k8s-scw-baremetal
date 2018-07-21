@@ -37,7 +37,15 @@ resource "scaleway_server" "k8s_node" {
   }
   provisioner "remote-exec" {
     inline = [
-      "kubectl get pods --all-namespaces",
+<<EOT
+kubectl get pods --all-namespaces
+
+//  Give all nodes role `worker`
+for node in $(kubectl get nodes --selector '!node-role.kubernetes.io/master' -o name); do \
+  kubectl label ${node} node-role.kubernetes.io/worker=; \
+done
+
+EOT
     ]
 
     on_failure = "continue"
