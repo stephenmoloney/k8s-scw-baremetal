@@ -7,6 +7,11 @@ variable "k8s_version" {
   default = "stable-1.9"
 }
 
+variable "helm_version" {
+  default     = "v2.9.1"
+  description = "Version of helm to be installed in kube-system namespace"
+}
+
 variable "weave_passwd" {
   default = "ChangeMe"
 }
@@ -46,3 +51,4 @@ variable "private_key" {
   default     = "~/.ssh/id_rsa"
   description = "The path to your private key"
 }
+

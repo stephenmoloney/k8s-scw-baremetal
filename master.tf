@@ -37,6 +37,7 @@ resource "scaleway_server" "k8s_master" {
       "kubectl create secret -n kube-system generic weave-passwd --from-literal=weave-passwd=${var.weave_passwd}",
       "kubectl apply -f \"https://cloud.weave.works/k8s/net?password-secret=weave-passwd&k8s-version=$(kubectl version | base64 | tr -d '\n')\"",
       "chmod +x /tmp/monitoring-install.sh && /tmp/monitoring-install.sh ${var.arch}",
+      "chmod +x /tmp/helm-install.sh && /tmp/helm-install.sh ${var.helm_version}"
     ]
   }
   provisioner "local-exec" {
