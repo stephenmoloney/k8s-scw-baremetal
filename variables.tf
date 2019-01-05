@@ -26,6 +26,11 @@ variable "arch" {
   description = "Values: arm arm64 x86_64"
 }
 
+variable "arch_bootscript" {
+  default     = "armv7l mainline 4.4.127"
+  description = "Use `armv7l mainline 4.4.127` for arm and `x86_64 mainline 4.9.93` for amd"
+}
+
 variable "region" {
   default     = "par1"
   description = "Values: par1 ams1"
