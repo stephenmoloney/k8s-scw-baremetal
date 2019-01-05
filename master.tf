@@ -5,7 +5,7 @@ resource "scaleway_ip" "k8s_master_ip" {
 resource "scaleway_server" "k8s_master" {
   count          = 1
   name           = "${terraform.workspace}-master-${count.index + 1}"
-  image          = "${data.scaleway_image.xenial.id}"
+  image          = "${data.scaleway_image.ubuntu.id}"
   type           = "${var.server_type}"
   public_ip      = "${element(scaleway_ip.k8s_master_ip.*.ip, count.index)}"
   security_group = "${scaleway_security_group.master_security_group.id}"
@@ -31,7 +31,7 @@ resource "scaleway_server" "k8s_master" {
   provisioner "remote-exec" {
     inline = [
       "set -e",
-      "chmod +x /tmp/docker-install.sh && /tmp/docker-install.sh ${var.docker_version}",
+      "chmod +x /tmp/docker-install.sh && /tmp/docker-install.sh ${var.ubuntu_version_short_name} ${var.arch} ${var.docker_version}",
       "chmod +x /tmp/kubeadm-install.sh && /tmp/kubeadm-install.sh ${var.k8s_version}",
       "kubeadm init --apiserver-advertise-address=${self.private_ip} --apiserver-cert-extra-sans=${self.public_ip} --kubernetes-version=${var.k8s_version} --ignore-preflight-errors=KubeletVersion",
       "mkdir -p $HOME/.kube && cp -i /etc/kubernetes/admin.conf $HOME/.kube/config",

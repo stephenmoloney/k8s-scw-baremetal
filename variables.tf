@@ -1,6 +1,16 @@
+variable "ubuntu_version_long_name" {
+  type = "string"
+  default = "Ubuntu Bionic"
+}
+
+variable "ubuntu_version_short_name" {
+  type = "string"
+  default = "bionic"
+}
+
 variable "docker_version" {
-  default     = "17.03.0~ce-0~ubuntu-xenial"
-  description = "Use 17.12.0~ce-0~ubuntu for x86_64 and 17.03.0~ce-0~ubuntu-xenial for arm"
+  default     = "18.06"
+  description = "Can be non-specific (eg 18.06) or exact (eg 18.06.0~ce~3-0~ubuntu)"
 }
 
 variable "k8s_version" {

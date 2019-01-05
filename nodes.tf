@@ -5,7 +5,7 @@ resource "scaleway_ip" "k8s_node_ip" {
 resource "scaleway_server" "k8s_node" {
   count          = "${var.nodes}"
   name           = "${terraform.workspace}-node-${count.index + 1}"
-  image          = "${data.scaleway_image.xenial.id}"
+  image          = "${data.scaleway_image.ubuntu.id}"
   type           = "${var.server_type_node}"
   public_ip      = "${element(scaleway_ip.k8s_node_ip.*.ip, count.index)}"
   security_group = "${scaleway_security_group.node_security_group.id}"
