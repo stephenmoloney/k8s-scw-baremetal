@@ -9,7 +9,7 @@ provider "external" {
 
 data "scaleway_image" "ubuntu" {
   architecture = "${var.arch}"
-  name         = "${var.ubuntu_version_long_name}"
+  name         = "${var.ubuntu_version}"
 }
 
 data "scaleway_bootscript" "architecture" {

@@ -28,7 +28,8 @@ resource "scaleway_server" "k8s_master" {
   provisioner "remote-exec" {
     inline = [
       "set -e",
-      "chmod +x /tmp/docker-install.sh && /tmp/docker-install.sh ${var.ubuntu_version_short_name} ${var.arch} ${var.docker_version}",
+      "export ubuntu_version=$(echo -n ${var.ubuntu_version} | cut -d \" \" -f 2 | awk '{print tolower($0)}')",
+      "chmod +x /tmp/docker-install.sh && /tmp/docker-install.sh $${ubuntu_version} ${var.arch} ${var.docker_version}",
       "chmod +x /tmp/kubeadm-install.sh && /tmp/kubeadm-install.sh ${var.k8s_version}",
       "kubeadm init --apiserver-advertise-address=${self.private_ip} --apiserver-cert-extra-sans=${self.public_ip} --kubernetes-version=${var.k8s_version} --ignore-preflight-errors=KubeletVersion",
       "mkdir -p $HOME/.kube && cp -i /etc/kubernetes/admin.conf $HOME/.kube/config",
