@@ -91,7 +91,7 @@ $ terraform apply \
  -var nodes=1 \
  -var server_type_node=C1 \
  -var weave_passwd=ChangeMe \
- -var docker_version=17.03.0~ce-0~ubuntu-xenial
+ -var docker_version=18.06
 ```
 
 ### Remote control

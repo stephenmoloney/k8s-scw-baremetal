@@ -5,15 +5,12 @@ resource "scaleway_ip" "k8s_master_ip" {
 resource "scaleway_server" "k8s_master" {
   count          = 1
   name           = "${terraform.workspace}-master-${count.index + 1}"
-  image          = "${data.scaleway_image.xenial.id}"
+  image          = "${data.scaleway_image.ubuntu.id}"
   type           = "${var.server_type}"
   public_ip      = "${element(scaleway_ip.k8s_master_ip.*.ip, count.index)}"
   security_group = "${scaleway_security_group.master_security_group.id}"
-
-  //  volume {
-  //    size_in_gb = 50
-  //    type       = "l_ssd"
-  //  }
+  boot_type      = "bootscript"
+  bootscript     = "${data.scaleway_bootscript.architecture.id}"
 
   connection {
     type        = "ssh"
@@ -42,7 +39,9 @@ chmod +x /tmp/docker-install.sh
 chmod +x /tmp/kubeadm-install.sh
 chmod g+w -R /tmp/kubeadm/
 
-/tmp/docker-install.sh ${var.docker_version} && \
+export ubuntu_version=$(echo -n ${var.ubuntu_version} | cut -d \" \" -f 2 | awk '{print tolower($0)}')
+
+/tmp/docker-install.sh $${ubuntu_version} ${var.arch} ${var.docker_version} && \
 /tmp/kubeadm-install.sh ${var.k8s_version} && \
 
 export KUBEADM_VERSION=$(apt-cache madison kubeadm | grep $(echo ${var.k8s_version} | cut -c8-) | \
