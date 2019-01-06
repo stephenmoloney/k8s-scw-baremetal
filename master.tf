@@ -68,8 +68,10 @@ else
   if [[ ${var.arch} == "arm" ]]; then
     kubeadm init phase control-plane apiserver --config=$${KUBEADM_CONFIG_FILE} --v 4
     sleep 2s && \
-    sed -i 's/failureThreshold: 8/initialDelaySeconds: 15/g' /etc/kubernetes/manifests/kube-apiserver.yaml && \
-    sed -i 's/initialDelaySeconds: 20/initialDelaySeconds: 240/g' /etc/kubernetes/manifests/kube-apiserver.yaml && \
+    cat /etc/kubernetes/manifests/kube-apiserver.yaml && \
+    sed -i 's/failureThreshold: 8/failureThreshold: 15/g' /etc/kubernetes/manifests/kube-apiserver.yaml && \
+    sed -i 's/initialDelaySeconds: [0-9][0-9]/initialDelaySeconds: 240/g' /etc/kubernetes/manifests/kube-apiserver.yaml && \
+    cat /etc/kubernetes/manifests/kube-apiserver.yaml && \
     kubeadm init \
       --skip-phases=control-plane \
       --ignore-preflight-errors=all \
