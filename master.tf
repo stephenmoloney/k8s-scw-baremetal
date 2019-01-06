@@ -39,7 +39,7 @@ chmod +x /tmp/docker-install.sh
 chmod +x /tmp/kubeadm-install.sh
 chmod g+w -R /tmp/kubeadm/
 
-export ubuntu_version=$(echo -n ${var.ubuntu_version} | cut -d \" \" -f 2 | awk '{print tolower($0)}')
+export ubuntu_version=$(echo -n ${var.ubuntu_version} | cut -d " " -f 2 | awk '{print tolower($0)}')
 
 /tmp/docker-install.sh $${ubuntu_version} ${var.arch} ${var.docker_version} && \
 /tmp/kubeadm-install.sh ${var.k8s_version} && \
@@ -61,8 +61,26 @@ else
   sed -i 's/CONFIG_CLUSTER_PUBLIC_IP/${self.public_ip}/g' $${KUBEADM_CONFIG_FILE} && \
   sed -i 's/CONFIG_CLUSTER_PRIVATE_IP/${self.private_ip}/g' $${KUBEADM_CONFIG_FILE} && \
   sed -i "s/CONFIG_KUBERNETES_VERSION/v$${KUBEADM_VERSION}/g" $${KUBEADM_CONFIG_FILE} && \
-  sed -i "s/CONTAINER_LOG_MAX_SIZE/${var.container_log_max_size}/" $${KUBEADM_CONFIG_FILE} && \
-  kubeadm init --ignore-preflight-errors=KubeletVersion --config=/$${KUBEADM_CONFIG_FILE}
+  sed -i "s/CONTAINER_LOG_MAX_SIZE/${var.container_log_max_size}/" $${KUBEADM_CONFIG_FILE}
+
+  # ref https://github.com/kubernetes/kubeadm/issues/413
+  # kube-apiserver.yaml initialDelaySeconds is too aggressive
+  if [[ ${var.arch} == "arm" ]]; then
+    kubeadm init phase control-plane apiserver --config=$${KUBEADM_CONFIG_FILE} --v 4
+    sleep 2s && \
+    sed -i 's/failureThreshold: 8/initialDelaySeconds: 15/g' /etc/kubernetes/manifests/kube-apiserver.yaml && \
+    sed -i 's/initialDelaySeconds: 20/initialDelaySeconds: 240/g' /etc/kubernetes/manifests/kube-apiserver.yaml && \
+    kubeadm init \
+      --skip-phases=control-plane \
+      --ignore-preflight-errors=all \
+      --config=$${KUBEADM_CONFIG_FILE} \
+      --v ${var.kubeadm_verbosity}
+  else
+    kubeadm init \
+      --ignore-preflight-errors=KubeletVersion \
+      --config=$${KUBEADM_CONFIG_FILE} \
+      --v ${var.kubeadm_verbosity}
+  fi
 fi && \
 
 mkdir -p $HOME/.kube && cp -i /etc/kubernetes/admin.conf $HOME/.kube/config && \

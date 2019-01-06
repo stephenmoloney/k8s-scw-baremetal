@@ -1,10 +1,10 @@
 variable "ubuntu_version" {
   default = "Ubuntu Xenial"
   description = <<EOT
-Use Ubuntu Xenial for arm, Ubuntu Bionic Beaver or Ubuntu Xenial
-for amd64. Kubernetes only has xenial packages.
+Use Ubuntu Xenial for arm
+Use Ubuntu Bionic Beaver or Ubuntu Xenial for amd64.
+Kubernetes only has xenial packages
 EOT
-  description = ""
 }
 
 variable "docker_version" {
@@ -29,11 +29,13 @@ variable "arch_bootscript" {
   default     = "4.4.127"
   description = <<EOT
 Specify the kernel and bootscript image to use.
-Use `4.4.127` for arm on ubuntu xenial
-Use `4.4.127` or `4.9.93` for arm on ubuntu bionic beaver
-Use `4.4.127` or `4.9.93` for arm on amd64
-To view possible kernels, run command such as:
-curl -sH "X-Auth-Token: $SCALEWAY_TOKEN" -H 'Content-Type: application/json' https://cp-par1.scaleway.com/images/ | \
+Use 4.4.127 for arm on ubuntu xenial
+Use 4.4.127 or 4.9.93 for arm on ubuntu bionic beaver
+Use 4.4.127 or 4.9.93 for arm on amd64
+
+To view possible kernels, run the command (modified as needed):
+
+curl -sH "X-Auth-Token: <SCALEWAY_TOKEN>" -H "Content-Type: application/json" https://cp-par1.scaleway.com/images/ | \
 jq '.[][] | select ( .arch == "arm" ) | select ( .name == "Ubuntu Bionic Beaver" )' | jq .default_bootscript.title
 EOT
 }
@@ -70,7 +72,12 @@ variable "private_key" {
 }
 
 variable "container_log_max_size" {
-  type        = "string"
   default     = "100Mi"
   description = "The maximum file size for container logs"
+}
+
+
+variable "kubeadm_verbosity" {
+  default     = "0"
+  description = "The verbosity level of the kubeadm init logs"
 }
