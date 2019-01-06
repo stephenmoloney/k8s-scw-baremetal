@@ -28,7 +28,7 @@ resource "scaleway_server" "k8s_node" {
   provisioner "remote-exec" {
     inline = [
       "set -e",
-      "chmod +x /tmp/docker-install.sh && /tmp/docker-install.sh ${var.docker_version}",
+      "chmod +x /tmp/docker-install.sh && /tmp/docker-install.sh $${ubuntu_version} ${var.arch} ${var.docker_version}",
       "chmod +x /tmp/kubeadm-install.sh && /tmp/kubeadm-install.sh ${var.k8s_version}",
       "${data.external.kubeadm_join.result.command}",
     ]

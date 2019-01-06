@@ -64,7 +64,7 @@ else
   sed -i "s/CONTAINER_LOG_MAX_SIZE/${var.container_log_max_size}/" $${KUBEADM_CONFIG_FILE}
 
   # ref https://github.com/kubernetes/kubeadm/issues/413
-  # kube-apiserver.yaml initialDelaySeconds is too aggressive
+  # kube-apiserver.yaml initialDelaySeconds is too eager
   if [[ ${var.arch} == "arm" ]]; then
     kubeadm init phase control-plane apiserver --config=$${KUBEADM_CONFIG_FILE} --v 4
     sleep 2s && \
